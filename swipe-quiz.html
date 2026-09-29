@@ -177,11 +177,11 @@ var IMG={IMG_CARABINER:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDA
 function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;}return a;}
 function $(id){return document.getElementById(id);}
 
-var order=[], idx=0, correct=0, history=[];
+var order=[], idx=0, correct=0, answers=[];
 
 function start(){
   order=shuffle(DECK.map(function(_,i){return i;}));
-  idx=0;correct=0;history=[];
+  idx=0;correct=0;answers=[];
   $('deck').innerHTML='';
   $('result').style.display='none';
   $('topBar').style.display='flex';$('stage').style.display='flex';$('ctrl').style.display='flex';
@@ -258,7 +258,7 @@ function judge(side){
   var oi=+el.dataset.oi,q=DECK[oi],corr=el.dataset.corr,ok=(side===corr);
   var pickedText=el.querySelectorAll('.opt')[side==='left'?0:1].textContent;
   if(ok)correct++;
-  history.push({q:q,ok:ok,pickedText:pickedText});
+  answers.push({q:q,ok:ok,pickedText:pickedText});
   var toRight=(side==='right');
   el.style.transform='translate('+(toRight?1:-1)*480+'px,-30px) rotate('+(toRight?24:-24)+'deg)';
   el.style.opacity='0';
@@ -289,7 +289,7 @@ function finish(){
   var pct=order.length?Math.round(correct/order.length*100):0;
   var r=$('result');r.style.display='flex';r.style.setProperty('--pct',pct);
   var msg=pct>=90?'Отличный результат':pct>=70?'Хороший результат':'Есть куда расти';
-  var rows=history.map(function(h){
+  var rows=answers.map(function(h){
     return '<div class="row '+(h.ok?'ok':'bad')+'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">'+
       (h.ok?'<path d="M5 13l4 4L19 7"/>':'<path d="M18 6 6 18M6 6l12 12"/>')+'</svg><span><b>'+h.q.q+'</b><br>Ваш ответ: '+h.pickedText+'</span></div>';
   }).join('');
